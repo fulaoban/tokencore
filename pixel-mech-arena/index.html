@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>像素机甲对决 · PIXEL MECH ARENA</title>
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="stage">
+      <canvas id="screen" width="320" height="180" aria-label="像素机甲对决游戏画面"></canvas>
+
+      <!-- 标题 / 模式选择 -->
+      <div id="title-screen" class="overlay">
+        <div class="panel">
+          <h1 class="logo">PIXEL<span>MECH</span>ARENA</h1>
+          <p class="subtitle">像素风机甲对决 · 1v1 回合格斗</p>
+          <div class="btn-row">
+            <button class="btn" data-mode="cpu">单人挑战 CPU</button>
+            <button class="btn" data-mode="pvp">双人对战</button>
+          </div>
+          <div class="btn-row small">
+            <button class="btn ghost" data-mode="cpu-hard">困难模式</button>
+            <button class="btn ghost" id="btn-mute">音效：开</button>
+          </div>
+          <div class="controls">
+            <div class="ctrl-col">
+              <h2>P1 · 赤焰 CRIMSON</h2>
+              <p><b>A / D</b> 移动　<b>W</b> 跳跃　<b>S</b> 防御</p>
+              <p><b>J</b> 轻击　<b>K</b> 重击　<b>L</b> 必杀</p>
+            </div>
+            <div class="ctrl-col">
+              <h2>P2 · 苍岚 AZURE</h2>
+              <p><b>← / →</b> 移动　<b>↑</b> 跳跃　<b>↓</b> 防御</p>
+              <p><b>,</b> 轻击　<b>.</b> 重击　<b>/</b> 必杀</p>
+            </div>
+          </div>
+          <p class="hint">按 <b>Enter</b> 开始 · <b>P</b> 暂停</p>
+        </div>
+      </div>
+
+      <!-- 结算 -->
+      <div id="result-screen" class="overlay hidden">
+        <div class="panel">
+          <h1 id="result-title" class="logo small">VICTORY</h1>
+          <p id="result-sub" class="subtitle"></p>
+          <div class="btn-row">
+            <button class="btn" id="btn-again">再来一局</button>
+            <button class="btn ghost" id="btn-back">返回标题</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 暂停 -->
+      <div id="pause-screen" class="overlay hidden">
+        <div class="panel narrow">
+          <h1 class="logo small">PAUSED</h1>
+          <div class="btn-row">
+            <button class="btn" id="btn-resume">继续</button>
+            <button class="btn ghost" id="btn-quit">退出到标题</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p id="rotate-tip">请横屏使用键盘游玩</p>
+  </div>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
