@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>深渊回响 · 游戏设计文档</title>
+<style>
+:root {
+  --bg: #14111c;
+  --bg-soft: #1c1826;
+  --card: #221d2e;
+  --line: #372f46;
+  --text: #e9e4f2;
+  --muted: #a79dbb;
+  --brand: #8b5cf6;
+  --brand-soft: #2a2140;
+  --gold: #f59e0b;
+  --green: #4caf50;
+  --blue: #3b82f6;
+  --red: #ef4444;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(900px 480px at 12% -8%, rgba(139, 92, 246, 0.20), transparent 60%),
+    radial-gradient(760px 420px at 92% 4%, rgba(245, 158, 11, 0.10), transparent 62%);
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 64px 32px 120px;
+}
+
+/* ---------- header ---------- */
+.hero {
+  padding: 40px 40px 34px;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: linear-gradient(160deg, rgba(42, 33, 64, 0.92), rgba(28, 24, 38, 0.92));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+
+.hero h1 {
+  margin: 0 0 6px;
+  font-size: 40px;
+  line-height: 1.25;
+  letter-spacing: 0.5px;
+}
+
+.hero .en {
+  margin: 0 0 18px;
+  color: var(--brand);
+  font-size: 15px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.hero .meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.hero .meta strong { color: var(--text); font-weight: 600; }
+
+/* ---------- headings ---------- */
+h1, h2, h3, h4 {
+  color: #fff;
+  line-height: 1.4;
+  scroll-margin-top: 24px;
+}
+
+h1 {
+  margin: 72px 0 22px;
+  font-size: 30px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+h2 {
+  margin: 52px 0 18px;
+  font-size: 23px;
+  padding-left: 14px;
+  border-left: 4px solid var(--brand);
+}
+
+h3 {
+  margin: 34px 0 12px;
+  font-size: 18px;
+  color: #fff;
+}
+
+h4 {
+  margin: 24px 0 10px;
+  font-size: 16px;
+  color: #d8cff0;
+}
+
+.hero + h1 { margin-top: 64px; }
+
+p { margin: 12px 0; }
+
+strong { color: #fff; font-weight: 600; }
+
+em { color: var(--gold); font-style: normal; font-weight: 600; }
+
+a { color: var(--brand); }
+
+code {
+  padding: 2px 7px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg-soft);
+  color: #d6c8ff;
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 13px;
+}
+
+pre {
+  margin: 18px 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #100d18;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #cfc6e4;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+/* ---------- blockquote ---------- */
+blockquote {
+  margin: 20px 0;
+  padding: 14px 20px;
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: rgba(245, 158, 11, 0.07);
+  color: #e3d9ef;
+}
+
+blockquote p { margin: 6px 0; }
+
+blockquote p:first-child strong { color: var(--gold); }
+
+/* ---------- lists ---------- */
+ul, ol { margin: 12px 0; padding-left: 26px; }
+
+li { margin: 7px 0; }
+
+li > strong:first-child { color: #fff; }
+
+hr {
+  margin: 44px 0;
+  border: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line) 20%, var(--line) 80%, transparent);
+}
+
+/* ---------- tables ---------- */
+table {
+  width: 100%;
+  margin: 20px 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  font-size: 14.5px;
+}
+
+thead th {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--brand-soft);
+  color: #e5dcff;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(55, 47, 70, 0.55);
+  vertical-align: top;
+}
+
+tbody tr:last-child td { border-bottom: 0; }
+
+tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.018); }
+
+tbody tr:hover { background: rgba(139, 92, 246, 0.07); }
+
+/* ---------- cover ---------- */
+.cover {
+  margin: 0 0 54px;
+  padding: 34px 38px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: linear-gradient(150deg, rgba(60, 42, 96, 0.55), rgba(28, 24, 38, 0.9));
+}
+
+.cover h1 {
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  font-size: 38px;
+}
+
+.cover .sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.cover .tag {
+  display: inline-block;
+  margin: 0 6px 6px 0;
+  padding: 4px 12px;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 999px;
+  background: rgba(139, 92, 246, 0.14);
+  color: #d9cbff;
+  font-size: 12.5px;
+}
+
+/* ---------- print ---------- */
+@media print {
+  body { background: #fff; color: #1a1a1a; }
+  body::before { display: none; }
+  .wrap { max-width: none; padding: 0; }
+  h1, h2, h3, h4 { color: #111; }
+  table { background: #fff; }
+  thead th { background: #f0eef7; color: #221d2e; }
+  pre { background: #f6f5fa; }
+  pre code { color: #333; }
+}
+
+@media (max-width: 720px) {
+  .wrap { padding: 32px 18px 80px; }
+  .hero, .cover { padding: 26px 22px; }
+  .hero h1, .cover h1 { font-size: 27px; }
+  h1 { font-size: 24px; }
+  h2 { font-size: 20px; }
+  table { font-size: 13px; }
+  thead th, tbody td { padding: 9px 10px; }
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="cover">
+<h1>《深渊回响》Echoes of the Abyss</h1>
+<p class="sub">
+<span class="tag">暗黑卡通 ARPG</span><span class="tag">装备即玩法</span><span class="tag">Roguelite 深渊</span><span class="tag">铁匠铺经营</span><span class="tag">Cocos Creator 3.8</span><br>
+游戏设计文档 (GDD) &nbsp;版本 v0.1 · 立项草案 &nbsp;|&nbsp; 引擎 Cocos Creator 3.8 LTS (TypeScript) &nbsp;|&nbsp; 平台 移动端优先 &nbsp;|&nbsp; 2D 等距视角
+</p>
+</div>
+<hr />
+<h2 id="0-一页速览">0. 一页速览</h2>
+<table>
+<thead>
+<tr class="header">
+<th>项</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>一句话</td>
+<td>每一件装备都是一次玩法选择，七个部位决定你的战斗方式</td>
+</tr>
+<tr class="even">
+<td>核心动作</td>
+<td>打怪 → 掉落 → 换装 → 改变打法</td>
+</tr>
+<tr class="odd">
+<td>差异化</td>
+<td>装备不只是数值，每个部位自带 1 个主动技 + 1 个被动</td>
+</tr>
+<tr class="even">
+<td>单局时长</td>
+<td>主线关卡 3–5 分钟；深渊单章 15–25 分钟</td>
+</tr>
+<tr class="odd">
+<td>长期目标</td>
+<td>12 章主线 + 无限深渊 + 铁匠铺产业 + 暗金图鉴收集</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="1-设计支柱-design-pillars">1. 设计支柱 (Design Pillars)</h2>
+<p>所有玩法决策最终都要能回溯到这三条，任何与之冲突的提案一律否决。</p>
+<h3
+id="支柱一装备即玩法而非装备即数值">支柱一：装备即玩法，而非装备即数值</h3>
+<p>装备的<strong>部位</strong>决定你获得什么能力，而不是只决定你的攻击力大
+3%。换一把武器不是把数字从 100 变成
+103，而是把「三段挥砍」换成「贯穿突刺」，整套 Build 的手感会变。</p>
+<blockquote>
+<p>落地约束：任何一次装备掉落，必须至少改变一项<strong>行为</strong>（技能形态、触发条件、结算方式）。纯数值提升的掉落只允许出现在
+T0/T1 品质。</p>
+</blockquote>
+<h3 id="支柱二每一次掉落都是一次赌">支柱二：每一次掉落都是一次赌</h3>
+<p>掉落是纯随机的，但玩家<strong>永远有决策</strong>：要不要为了「词缀更好但部位不对」的装备放弃当前
+Build，要不要花残片洗掉一条不合 Build 的词缀。</p>
+<blockquote>
+<p>落地约束：深渊内必须有「锁定 / 洗练 /
+跳过掉落」三种玩家操作，任何掉落都不能自动进背包。</p>
+</blockquote>
+<h3 id="支柱三暗黑卡通--高对比剪影而非血腥写实">支柱三：暗黑卡通 =
+高对比剪影，而非血腥写实</h3>
+<p>美术走剪影 + 描边 +
+高饱和点缀，不做写实脏污。装备品质靠<strong>发光边框 +
+图标符号</strong>区分，不靠精细贴图。</p>
+<blockquote>
+<p>落地约束：单件装备图标成本预算 ≤ 15 分钟，7 部位 × 6 品质 = 42
+个基础图标靠换色 + 换前缀角标复用。</p>
+</blockquote>
+<hr />
+<h2 id="2-核心玩法支柱的实现结构">2. 核心玩法支柱的实现结构</h2>
+<pre><code>                    ┌──────────────────────────────┐
+                    │        装备系统 (7 部位)       │
+                    │  头盔 鞋 护盾 上衣 武器 腰带 裤子 │
+                    └───────────────┬──────────────┘
+                                    │ 每个部位 1主动 + 1被动
+                                    ▼
+   ┌────────────┐      ┌────────────────────┐      ┌────────────┐
+   │  主线 12 章 │ ───► │   战斗 / Build 成型 │ ◄─── │ 铁匠铺经营  │
+   │  剧情+词缀池│      │                    │      │ 锻造/附魔/洗练│
+   └────────────┘      └─────────┬──────────┘      └────────────┘
+                                  │
+                        ┌─────────▼──────────┐
+                        │  回响深渊 (Roguelite) │
+                        │  节点地图 + 3选1诅咒 │
+                        └────────────────────┘</code></pre>
+<p>三条内容线共用同一套装备与 Build
+系统，任何一条线的产出都能在另一条线复用：</p>
+<ul>
+<li><strong>主线</strong> →
+提供新基底、新词缀池、套装图纸，决定「你的装备池有多大」</li>
+<li><strong>深渊</strong> →
+提供高频掉落与残片，决定「你的装备有多强」</li>
+<li><strong>铁匠铺</strong> →
+提供定向制造与词缀改造，决定「你的装备有多合身」</li>
+</ul>
+<hr />
+<h2 id="3-世界观与叙事">3. 世界观与叙事</h2>
+<h3 id="31-设定">3.1 设定</h3>
+<p>大陆历末，<strong>深渊</strong>裂开了一道口子。裂口不会喷出怪物，它<strong>回放</strong>——把死者生前的战斗一遍遍演给你看。每一场战斗都是某个人死前那一战的复刻。</p>
+<p>「深渊回响」是冒险者对这道裂口的俗称。越往深处走，回响越清晰，到第七层你甚至能看见对手当年的走位和犹豫。</p>
+<h3 id="32-玩家身份">3.2 玩家身份</h3>
+<p><strong>拾遗者</strong>：专门进入深渊、带回回响之物的赏金猎人。不问正义，只问价码。玩家的装备不是「打造」出来的，是从回响里<strong>拾</strong>回来的。</p>
+<h3 id="33-叙事载体低成本可扩展">3.3 叙事载体（低成本、可扩展）</h3>
+<ul>
+<li><strong>章节过场</strong>：立绘 + 竖版对话框，每章 2–3 段</li>
+<li><strong>深渊日志</strong>：进入深渊时随机抽 1–2
+条前人日志（纯文本，几十条复用），提供世界感而不占产能</li>
+<li><strong>装备图鉴</strong>：每件暗金附带一段短描述，收集即叙事</li>
+</ul>
+<blockquote>
+<p>产能提示：叙事<strong>不驱动</strong>产能规划。12 章 × 3 段 = 36
+段过场 + 60 条日志 + 12 件暗金描述 = 一名文案 + 一名兼职插画可覆盖。</p>
+</blockquote>
+<h3 id="34-12-章主线结构">3.4 12 章主线结构</h3>
+<table>
+<thead>
+<tr class="header">
+<th>章</th>
+<th>区域</th>
+<th>新增机制</th>
+<th>解锁基底</th>
+<th>新词缀池</th>
+<th>套装</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>裂口边缘</td>
+<td>基础战斗、掉落</td>
+<td>破旧系全套</td>
+<td>力量/体质</td>
+<td>—</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>焦土荒原</td>
+<td>元素伤害、精英怪</td>
+<td>猎手系</td>
+<td>火焰/流血</td>
+<td>猎手三件（鞋+腰带+上衣）</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>沉没钟楼</td>
+<td>场景机关、毒沼</td>
+<td>秘银系</td>
+<td>冰霜/中毒</td>
+<td>钟楼守望（头盔+裤子+护盾）</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>灰烬商道</td>
+<td>商人 NPC、护送</td>
+<td>亡者系</td>
+<td>暗影/护甲</td>
+<td>商道保镖（腰带+上衣+武器）</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>骨之回廊</td>
+<td>骷髅召唤、召唤词缀</td>
+<td>龙骨系</td>
+<td>召唤/吸血</td>
+<td>骨王（头盔+护盾+武器）</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>熔火工坊</td>
+<td>锻造台剧情、Boss 锻造</td>
+<td>炎魔系</td>
+<td>灼烧/反击</td>
+<td>炎魔匠（腰带+护盾+裤子）</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>静默书库</td>
+<td>沉默（禁用技能）、祝福</td>
+<td>幽冥系</td>
+<td>沉默/祝福</td>
+<td>无言（鞋+上衣+裤子）</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>血月荒原</td>
+<td>血月 Buff、献祭</td>
+<td>血誓系</td>
+<td>献祭/反伤</td>
+<td>血月使（头盔+腰带+武器）</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>霜牙雪岭</td>
+<td>冰晶护盾、环境伤害</td>
+<td>霜牙系</td>
+<td>冰晶/减速</td>
+<td>霜牙猎手（鞋+裤子+护盾）</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>断罪之庭</td>
+<td>审判机制、时限</td>
+<td>断罪系</td>
+<td>审判/处决</td>
+<td>断罪官（上衣+武器+护盾）</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>虚空边界</td>
+<td>词缀反转、规则改写</td>
+<td>虚空系</td>
+<td>反转/虚空</td>
+<td>虚空行者（头盔+鞋+裤子）</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>回响之心</td>
+<td>全机制叠加</td>
+<td>原初系</td>
+<td>全部</td>
+<td>拾遗者三件套（7 部位全解锁）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>每章结构</strong>：8–10 个关卡（关卡 = 2–4 波怪 + 1
+个精英或宝箱）→ 1 个章节 Boss（3 阶段）→ 1 个词缀解锁演出。 <strong>章节
+Boss 掉落</strong>：本章套装的 1 个随机部位（保底紫）+ 1
+张图纸（可定向打造套装剩余部位）。</p>
+<hr />
+<h2 id="4-装备系统核心">4. 装备系统（核心）</h2>
+<h3 id="41-七个部位">4.1 七个部位</h3>
+<table>
+<thead>
+<tr class="header">
+<th>部位</th>
+<th>英文</th>
+<th>主属性倾向</th>
+<th>携带主动技（示例）</th>
+<th>携带被动（示例）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>头盔</td>
+<td>Helmet</td>
+<td>生命 / 护甲 / 技能等级</td>
+<td>恐惧冲击：AoE 眩晕</td>
+<td>受击时附近敌人移速 -20%</td>
+</tr>
+<tr class="even">
+<td>鞋</td>
+<td>Boots</td>
+<td>移速 / 闪避</td>
+<td>疾影步：瞬发位移 + 突进</td>
+<td>闪避成功后下次攻击 +50% 暴击</td>
+</tr>
+<tr class="odd">
+<td>护盾</td>
+<td>Shield</td>
+<td>格挡率 / 格挡强度</td>
+<td>壁垒：格挡窗口 + 反伤</td>
+<td>受击积累怒气，满 100 释放</td>
+</tr>
+<tr class="even">
+<td>上衣</td>
+<td>Chest</td>
+<td>护甲 / 生命 / 减伤</td>
+<td>血怒：消耗生命换攻击力</td>
+<td>生命低于 30% 时自动获得护盾</td>
+</tr>
+<tr class="odd">
+<td>武器</td>
+<td>Weapon</td>
+<td>攻击 / 暴击 / 技能等级</td>
+<td>终结技：三段挥砍（主输出）</td>
+<td>暴击积累斩杀值，满值处决</td>
+</tr>
+<tr class="even">
+<td>腰带</td>
+<td>Belt</td>
+<td>吸血 / 治疗 / 药剂</td>
+<td>药剂：即时治疗 + 解毒</td>
+<td>击杀回复怒气</td>
+</tr>
+<tr class="odd">
+<td>裤子</td>
+<td>Pants</td>
+<td>护甲 / 韧性 / 异常抗性</td>
+<td>束缚：定身 + 沉默</td>
+<td>异常状态持续时间 +25%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>设计说明</strong>：技能栏共 6 格，武器的主动技永久占据第 1
+格，其余 5 格由其他 6
+个部位竞争填充。玩家天然会产生「我该放弃哪个部位的技能」的选择——这就是 A
+方案（装备即技能）的核心张力。</p>
+<h3 id="42-品质分级与命名规范">4.2 品质分级与命名规范</h3>
+<p>命名格式：<strong><code>[前缀] + [词缀名] + [部位名]</code></strong>，例：<code>深渊的猎颅头盔</code>、<code>不朽的裂魂战裤</code>。</p>
+<table>
+<thead>
+<tr class="header">
+<th>品质</th>
+<th>颜色</th>
+<th>词缀数</th>
+<th>前缀池</th>
+<th>定位</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>T0 破损</td>
+<td>灰</td>
+<td>0</td>
+<td>破旧的 / 粗劣的 / 碎裂的</td>
+<td>纯分解料</td>
+</tr>
+<tr class="even">
+<td>T1 普通</td>
+<td>白</td>
+<td>1</td>
+<td>普通的 / 木质的 / 铁制的 / 粗工的</td>
+<td>过渡</td>
+</tr>
+<tr class="odd">
+<td>T2 精良</td>
+<td>绿</td>
+<td>2</td>
+<td>厚实的 / 猎手的 / 锋利的 / 精工的</td>
+<td>前期主力</td>
+</tr>
+<tr class="even">
+<td>T3 稀有</td>
+<td>蓝</td>
+<td>3</td>
+<td>秘银的 / 龙鳞的 / 亡者的 / 猎魂的</td>
+<td>中期主力</td>
+</tr>
+<tr class="odd">
+<td>T4 史诗</td>
+<td>紫</td>
+<td>4</td>
+<td>深渊的 / 血誓的 / 幽冥的 / 灾厄的</td>
+<td>核心 Build</td>
+</tr>
+<tr class="even">
+<td>T5 传说</td>
+<td>橙</td>
+<td>5 + 1 传说特性</td>
+<td>不朽的 / 炎魔的 / 永恒的 / 灭魂的</td>
+<td>追求目标</td>
+</tr>
+<tr class="odd">
+<td>T6 神话</td>
+<td>红</td>
+<td>6 + 2 传说特性</td>
+<td>原初的 / 虚空的 / 灭世的 / 终焉的</td>
+<td>终极</td>
+</tr>
+<tr class="even">
+<td>T7 暗金</td>
+<td>橙红特殊框</td>
+<td>改写规则</td>
+<td>无前缀，专属名</td>
+<td>收集 / 流派核心</td>
+</tr>
+</tbody>
+</table>
+<p><strong>前缀规则</strong>：</p>
+<ol type="1">
+<li>前缀由品质决定，玩家的<strong>基础词缀名永远带前缀</strong>，一眼可判品质</li>
+<li>前缀决定该装备的<strong>词缀倾向</strong>（例：「炎魔的」必带火伤，「亡者的」必带吸血/召唤）</li>
+<li>前缀是<strong>美术与音效的第一识别位</strong>（图标左上角角标 +
+名称首字高亮）</li>
+</ol>
+<h3 id="43-词缀系统">4.3 词缀系统</h3>
+<p><strong>通用属性池（无部位限制）</strong>：攻击力、攻击速度、暴击率、暴击伤害、生命值、护甲、闪避、移速、伤害减免、格挡率、格挡强度、生命偷取、治疗加成、冷却缩减、技能等级、资源回复。</p>
+<p><strong>元素属性池</strong>：火焰 / 冰霜 / 雷 / 暗影 / 物理
+伤害与抗性。</p>
+<p><strong>状态池（异常）</strong>：燃烧 / 流血 / 中毒 / 冰冻 / 眩晕 /
+沉默 / 束缚 / 减速。</p>
+<p><strong>部位→词缀权重</strong>（决定掉落时的词缀偏向）：</p>
+<table>
+<thead>
+<tr class="header">
+<th>部位</th>
+<th>高权重</th>
+<th>低权重</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>头盔</td>
+<td>生命值、护甲、技能等级、冷却缩减、异常抗性</td>
+<td>攻击速度、暴击率</td>
+</tr>
+<tr class="even">
+<td>鞋</td>
+<td>移速、闪避、攻击速度</td>
+<td>生命值、治疗加成</td>
+</tr>
+<tr class="odd">
+<td>护盾</td>
+<td>格挡率、格挡强度、护甲、生命值</td>
+<td>移速、攻击速度</td>
+</tr>
+<tr class="even">
+<td>上衣</td>
+<td>护甲、生命值、伤害减免</td>
+<td>暴击率、移速</td>
+</tr>
+<tr class="odd">
+<td>武器</td>
+<td>攻击力、暴击率、暴击伤害、技能等级</td>
+<td>生命值、护甲</td>
+</tr>
+<tr class="even">
+<td>腰带</td>
+<td>生命偷取、治疗加成、药剂回复、资源回复</td>
+<td>护甲、闪避</td>
+</tr>
+<tr class="odd">
+<td>裤子</td>
+<td>护甲、韧性、异常抗性、伤害减免</td>
+<td>暴击伤害、资源回复</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键约束（防组合爆炸）</strong>：</p>
+<ul>
+<li><strong>部位不重复</strong>：同一部位不会出现两条同权重词缀（如武器不会同时给两条攻击速度）</li>
+<li><strong>词缀可跨部位</strong>：暴击率可出现在武器/鞋/头盔，形成多来源
+Build 可能性</li>
+<li><strong>全局词缀上限</strong>：同一词缀在 7 个部位上最多出现 3
+次</li>
+</ul>
+<h3 id="44-套装系统">4.4 套装系统</h3>
+<p>每个套装 3 件，激活「2 件效果」+「3
+件效果」。套装效果<strong>改变行为</strong>而非只加数值。</p>
+<table>
+<thead>
+<tr class="header">
+<th>套装</th>
+<th>2 件</th>
+<th>3 件</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>猎手</td>
+<td>移速 +15%</td>
+<td>首次击杀敌人回复 8% 生命，攻速 +10%</td>
+</tr>
+<tr class="even">
+<td>钟楼守望</td>
+<td>受到控制时免疫</td>
+<td>每 5 秒获得一次可抵挡一次伤害的护盾</td>
+</tr>
+<tr class="odd">
+<td>骨王</td>
+<td>召唤物 +1 且继承 30% 属性</td>
+<td>召唤物死亡时爆炸造成范围伤害</td>
+</tr>
+<tr class="even">
+<td>炎魔匠</td>
+<td>受到伤害积攒熔火值</td>
+<td>熔火值满时，下次技能附带燃烧</td>
+</tr>
+<tr class="odd">
+<td>血月使</td>
+<td>生命低于 50% 时攻速 +25%</td>
+<td>生命低于 30% 时免疫控制</td>
+</tr>
+<tr class="even">
+<td>断罪官</td>
+<td>击杀精英积累审判值</td>
+<td>审判值满时对全场敌人处决（低血量必杀）</td>
+</tr>
+<tr class="odd">
+<td>虚空行者</td>
+<td>技能伤害 +20%</td>
+<td>每 8 秒免疫一次负面状态</td>
+</tr>
+<tr class="even">
+<td>拾遗者</td>
+<td>全部位主动技等级 +1</td>
+<td>深渊内掉落品质概率提升（受福祸平衡）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="45-暗金unique设计">4.5 暗金（Unique）设计</h3>
+<p>7
+件暗金，每件改写一条规则，是流派的核心载体。<strong>不参与随机掉落</strong>，全部通过图纸
++ 深渊通关定向打造。</p>
+<table>
+<thead>
+<tr class="header">
+<th>暗金</th>
+<th>部位</th>
+<th>规则改写</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>拾荒者的贪婪</td>
+<td>腰带</td>
+<td>背包内每件未装备的紫色以上装备，额外提供 3% 攻击力</td>
+</tr>
+<tr class="even">
+<td>无尽回响</td>
+<td>武器</td>
+<td>终结技第 3 段不消耗怒气，且必定暴击</td>
+</tr>
+<tr class="odd">
+<td>碎骨者的宽容</td>
+<td>裤子</td>
+<td>致死伤害改为保留 1 点生命，每场战斗仅一次，冷却 30 分钟</td>
+</tr>
+<tr class="even">
+<td>守夜人的长明</td>
+<td>头盔</td>
+<td>恐惧冲击改为持续照明光环，范围内敌人无法沉默你</td>
+</tr>
+<tr class="odd">
+<td>铁壁的裂痕</td>
+<td>护盾</td>
+<td>格挡不再消耗耐久，改为消耗生命，反伤翻倍</td>
+</tr>
+<tr class="even">
+<td>疾影的残响</td>
+<td>鞋</td>
+<td>疾影步可连用 3 次，每次留一道残影，残影 2 秒后爆炸</td>
+</tr>
+<tr class="odd">
+<td>血契的代价</td>
+<td>上衣</td>
+<td>血怒改为永久生效，但每 10 秒扣 3% 最大生命</td>
+</tr>
+</tbody>
+</table>
+<h3 id="46-掉落生成算法">4.6 掉落生成算法</h3>
+<pre><code>生成一件装备：
+1. 决定品质     P(quality) = base[quality] × 幸运修正 × 深渊层数修正 × 套装标记
+2. 决定部位     按怪物掉落表权重随机（精英/Boss 有部位权重偏移）
+3. 决定基底     该部位该品质下的基底名池随机（如「猎颅」「裂魂」「守望」）
+4. 决定前缀     从该品质前缀池随机 → 决定词缀倾向
+5. 决定词缀     按部位权重池采样 N 条（互斥规则约束）→ 套用前缀倾向
+6. 决定数值     每条词缀在 [min, max] 区间 roll，稀有度影响区间宽度
+7. 判定传说特性  T5+ 概率触发 1 条，T6 概率触发 2 条（池按品质+部位限定）
+8. 生成 Item ID  写入唯一实例 ID 与 roll 后的最终数值</code></pre>
+<p><strong>掉落表归属</strong>：怪物身上挂 <code>dropTableId</code> →
+表内定义
+<code>equipChance</code>、<code>qualityWeights[]</code>、<code>slotWeights[]</code>、<code>minQuality</code>。章节越深，Boss
+的 <code>minQuality</code> 越高。</p>
+<h3 id="47-装备评分-item-power">4.7 装备评分 (Item Power)</h3>
+<p>用于 UI 快速对比与深渊难度匹配，不参与实际战斗计算。
+<code>ItemPower = 品质基线(品质) × (1 + Σ词缀权重 × 0.08) × (1 + 传说特性数 × 0.15)</code>
+品质基线：T0=1, T1=3, T2=8, T3=18, T4=35, T5=65, T6=110, T7=160</p>
+<h3 id="48-铁匠铺系统">4.8 铁匠铺系统</h3>
+<table>
+<thead>
+<tr class="header">
+<th>功能</th>
+<th>消耗</th>
+<th>产出</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>分解</td>
+<td>装备</td>
+<td>锻造石 + 部位碎片</td>
+<td>T0/T1 全自动，T2+ 需二次确认（防误分解）</td>
+</tr>
+<tr class="even">
+<td>锻造</td>
+<td>锻造石 + 图纸</td>
+<td>指定部位 + 指定品质的新装备</td>
+<td>品质由图纸决定，词缀随机；这是<strong>定向获取套装</strong>的路径</td>
+</tr>
+<tr class="odd">
+<td>附魔</td>
+<td>深渊结晶</td>
+<td>给装备附加 1 条「特性」（非词缀）</td>
+<td>特性永久附加，可洗</td>
+</tr>
+<tr class="even">
+<td>洗练</td>
+<td>残片</td>
+<td>重掷某一条词缀的数值区间</td>
+<td>只能洗数值，不改词缀类型与品质</td>
+</tr>
+<tr class="odd">
+<td>鉴定</td>
+<td>金币</td>
+<td>开出未鉴定装备的真实属性</td>
+<td>鉴定费随词缀数递增；鉴定前只显示颜色</td>
+</tr>
+<tr class="even">
+<td>分解进阶</td>
+<td>锻造石 + 部位碎片</td>
+<td>把 3 件同品质同部位合成 1 件高一品质</td>
+<td>品质上限受图纸约束</td>
+</tr>
+<tr class="odd">
+<td>订单</td>
+<td>—</td>
+<td>金币 + 声望</td>
+<td>NPC 每日订单：要某部位某品质以上 / 要某套装部件</td>
+</tr>
+<tr class="even">
+<td>寄售</td>
+<td>金币</td>
+<td>声望</td>
+<td>把不需要的装备挂出去，等其他玩家买（可选，联网版）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>未鉴定装备</strong>是铁匠铺的核心张力来源：深渊里掉下一件未鉴定的橙装，你无法判断它是否值得洗练——先花金币鉴定还是先跑路？这是免费产生「二选一决策」的低成本设计。</p>
+<hr />
+<h2 id="5-战斗系统">5. 战斗系统</h2>
+<h3 id="51-视角与操作">5.1 视角与操作</h3>
+<ul>
+<li><strong>2D 等距视角</strong>（45°
+斜俯视），参考《暗黑破坏神》《火炬之光》手游化形态</li>
+<li><strong>虚拟摇杆移动 + 点击技能施放</strong>，普攻自动索敌</li>
+<li>单局怪物数量 8–25 只，全员同屏，靠位移与技能规避而非硬拼</li>
+</ul>
+<h3 id="52-技能系统">5.2 技能系统</h3>
+<ul>
+<li>技能栏 <strong>6 格</strong>：第 1 格固定为武器主动技，其余 5
+格由其他部位竞争</li>
+<li>冷却采用<strong>充能式</strong>（充能数 = 基础充能 +
+冷却缩减），避免"技能转好了却用不掉"的挫败</li>
+<li>怒气/资源条：<strong>普攻与击杀积累</strong>，消耗释放，武器主动技是主要消费口</li>
+<li>每个部位主动技有 <strong>3
+个等级</strong>（来自装备技能等级词缀或铁匠铺强化），等级提升改变数值 +
+解锁 1 个变体（如恐惧冲击 Lv3 变为吸附型）</li>
+</ul>
+<h3 id="53-敌人与战斗威胁类型">5.3 敌人与战斗威胁类型</h3>
+<table>
+<thead>
+<tr class="header">
+<th>类型</th>
+<th>行为</th>
+<th>应对</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>近战冲锋</td>
+<td>直冲玩家，接触伤害</td>
+<td>位移 / 护盾格挡</td>
+</tr>
+<tr class="even">
+<td>远程弹幕</td>
+<td>定点发射可躲避弹体</td>
+<td>走位，不贪输出</td>
+</tr>
+<tr class="odd">
+<td>施法者</td>
+<td>蓄力 1.5s 后 AoE</td>
+<td>打断（用主动技）</td>
+</tr>
+<tr class="even">
+<td>召唤者</td>
+<td>持续生成小怪</td>
+<td>优先清召唤者</td>
+</tr>
+<tr class="odd">
+<td>护盾者</td>
+<td>必须破盾才能伤害</td>
+<td>集中爆发</td>
+</tr>
+<tr class="even">
+<td>回声者</td>
+<td>复制玩家 3 秒前的操作</td>
+<td>时机管理</td>
+</tr>
+</tbody>
+</table>
+<p><strong>「回声者」是本作特色敌人</strong>：它复刻玩家刚才的技能与走位，逼迫玩家改变行为而不是重复输出。设计意图是把「回响」世界观落到战斗机制上。</p>
+<h3 id="54-死亡与惩罚">5.4 死亡与惩罚</h3>
+<ul>
+<li>普通关卡：原地复活，掉落物保留</li>
+<li>深渊：死亡则本层掉落全部损失（<strong>已拾取装备保留</strong>，未拾取的留在尸体可二次拾取），损失一半深渊结晶</li>
+<li>不做体力/耐久惩罚，只做<strong>时间成本</strong>惩罚</li>
+</ul>
+<hr />
+<h2 id="6-回响深渊roguelite-副本">6. 回响深渊（Roguelite 副本）</h2>
+<h3 id="61-结构">6.1 结构</h3>
+<ul>
+<li>深渊分 <strong>若干章（Depth Cycle）</strong>，每章 10 层：第 1–8
+层普通节点，第 9 层精英，第 10 层章 Boss</li>
+<li>每章 10 层节点随机连接成<strong>分支路径图</strong>（3–5
+层深度，横向 2–3 条支路）</li>
+</ul>
+<h3 id="62-节点类型">6.2 节点类型</h3>
+<table>
+<thead>
+<tr class="header">
+<th>节点</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>战斗</td>
+<td>2–4 波怪，标准掉落</td>
+</tr>
+<tr class="even">
+<td>精英</td>
+<td>1 只强化怪 + 护卫，必掉紫装以上</td>
+</tr>
+<tr class="odd">
+<td>宝箱</td>
+<td>开箱，装备品质随层数提升</td>
+</tr>
+<tr class="even">
+<td>商人</td>
+<td>用金币买 1 件指定部位装备（品质随机，价格浮动）</td>
+</tr>
+<tr class="odd">
+<td>事件</td>
+<td>文本 + 二选一（例：用 30% 生命换一件紫装 / 失去 1
+件装备换深渊结晶）</td>
+</tr>
+<tr class="even">
+<td>休整</td>
+<td>恢复生命 + 免费洗练 1 条词缀</td>
+</tr>
+<tr class="odd">
+<td>祭坛</td>
+<td>献祭一件装备，换取本层一条诅咒词缀移除</td>
+</tr>
+<tr class="even">
+<td>首领</td>
+<td>章 Boss，必掉套装部件</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-三选一诅咒词缀每层进入时">6.3
+三选一诅咒词缀（每层进入时）</h3>
+<p>这是深渊的策略核心。玩家在<strong>层首</strong>从 3 条诅咒中选 1
+条，选中后本层生效，效果写在屏幕左侧常驻。</p>
+<p><strong>普通档（1–10 层）</strong> — 单边收益 | 词缀 | 效果 |
+|---|---| | 贪婪 | 掉落品质 +1 档，但怪物属性 ×1.3 | | 孤军 |
+召唤物数量上限 -1，自身属性 ×1.2 | | 灼热 | 每 5
+秒受到一次真实伤害，掉落 +1 件蓝装 | | 铁壁 | 玩家格挡率归零，敌方掉落
++50% 金币 | | 沉默 | 主动技冷却 +30%，但击杀额外积累怒气 | | 群狼 |
+怪物数量 +40%，但怪物攻速 -25% | | 黑暗 | 屏幕可视范围缩小，掉落率 +30%
+|</p>
+<p><strong>精英档（11–20 层）</strong> — 需要 Build 厚度 | 词缀 | 效果 |
+|---|---| | 词缀反转 | 本层所有增益词缀变为减益，减益变为增益 | |
+生命献祭 | 最大生命 -40%，所有伤害 +40% | | 反伤之潮 | 受到伤害时反弹
+50%，但玩家伤害 -20% | | 双面 | 玩家与敌人的护甲互换数值 | | 静默领域 |
+玩家无法使用主动技 5 秒（每 20 秒触发） | | 掠夺 | 每 10
+层不选祭坛则丢失 1 件装备 | | 血月 |
+敌人血量随时间增长，只有速杀或爆发可解 |</p>
+<p><strong>章 BOSS 档（21+ 层）</strong> — 规则改写 | 词缀 | 效果 |
+|---|---| | 镜界 | 本章所有敌人属性 ×2，但掉落 Item Power ×1.6 | | 断链
+| 套装效果全部失效，仅词缀生效 | | 单一 |
+只掉落「武器」部位装备，其余部位本层不可用 | | 时间裂隙 | 每 30
+秒未击杀敌人则全屏伤害，需持续输出 | | 深渊压榨 | 每层结束扣 8%
+生命，深渊结晶产出 +60% |</p>
+<h3 id="64-层间操作对应支柱二">6.4 层间操作（对应支柱二）</h3>
+<p>进入下一层前，玩家可对背包做三件事：</p>
+<ul>
+<li><strong>锁定</strong>：把某件装备固定，下一层掉落时不覆盖它</li>
+<li><strong>洗练</strong>：消耗残片重掷一条词缀</li>
+<li><strong>跳过</strong>：主动放弃本层掉落，换取额外 1 个残片</li>
+</ul>
+<p>这三个操作让玩家在每一层都有「停下来做决定」的时刻，而不是无脑清怪。</p>
+<h3 id="65-深渊产出">6.5 深渊产出</h3>
+<ul>
+<li>装备（主产出）</li>
+<li>深渊结晶（附魔材料，深渊专属）</li>
+<li>残片（洗练材料）</li>
+<li>回响印记（通关章产出，用于兑换暗金图纸与套装图纸）</li>
+<li>每 10 层首通有 <strong>宝箱轮换</strong>：通关奖励池</li>
+</ul>
+<hr />
+<h2 id="7-主线与副本的分工">7. 主线与副本的分工</h2>
+<table>
+<thead>
+<tr class="header">
+<th></th>
+<th>主线</th>
+<th>回响深渊</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>目的</td>
+<td>扩装备池、解锁新词缀与基底</td>
+<td>提升装备强度与定向刷取</td>
+</tr>
+<tr class="even">
+<td>关卡数</td>
+<td>12 章 × 8–10 关</td>
+<td>无限</td>
+</tr>
+<tr class="odd">
+<td>时长</td>
+<td>3–5 分钟/关</td>
+<td>15–25 分钟/章</td>
+</tr>
+<tr class="even">
+<td>掉落</td>
+<td>章节 Boss 保底紫 + 1 图纸</td>
+<td>高频全品质 + 碎片 + 印记</td>
+</tr>
+<tr class="odd">
+<td>策略</td>
+<td>关卡内战斗解谜（打断、站位、时机）</td>
+<td>局外 Build 与词缀取舍</td>
+</tr>
+<tr class="even">
+<td>新手引导</td>
+<td>承担</td>
+<td>不承担</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键设计</strong>：主线 = 「学会这套系统」，深渊 =
+「精通这套系统」。新手在主线里被强制接触 7
+个部位与技能栏竞争，深渊只是把选择权放大。</p>
+<hr />
+<h2 id="8-铁匠铺经营线">8. 铁匠铺经营线</h2>
+<p>铁匠铺是<strong>长线留存 +
+数值回收</strong>系统，不承担核心战斗体验。</p>
+<ul>
+<li><strong>委托单</strong>：NPC 发布（我要一件紫的护盾 / 给我 3
+件任意腰带），完成给金币与声望，每日刷新</li>
+<li><strong>声望等级</strong>：解锁图纸、委托类型、寄售位</li>
+<li><strong>铁砧升级</strong>：用锻造石升级，解锁更高品质区间与更多洗练位</li>
+<li><strong>学徒</strong>：可派学徒自动采集锻造石（放置玩法，离线产出），学徒属性可培养</li>
+<li><strong>店铺外观</strong>：暗黑卡通的铁匠铺场景可装饰（挂件、灯光、旗帜），纯外观付费点</li>
+</ul>
+<p><strong>产能提示</strong>：铁匠铺 UI 全部是静态面板 + 图标 +
+数字，不需要美术新场景（除 1
+张主界面背景），是整个项目里性价比最高的一块内容。</p>
+<hr />
+<h2 id="9-数值与经济">9. 数值与经济</h2>
+<h3 id="91-成长曲线">9.1 成长曲线</h3>
+<table>
+<thead>
+<tr class="header">
+<th>层级</th>
+<th>玩家</th>
+<th>装备</th>
+<th>深渊</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>第 1 小时</td>
+<td>Lv1–5，2 件白绿装备</td>
+<td>T1–T2</td>
+<td>深渊 1–3 层</td>
+</tr>
+<tr class="even">
+<td>第 1 天</td>
+<td>Lv15，7 件绿紫混搭</td>
+<td>T3–T4 成型</td>
+<td>深渊 1 章通关</td>
+</tr>
+<tr class="odd">
+<td>第 1 周</td>
+<td>Lv35，首套套装</td>
+<td>T4 + 传说特性</td>
+<td>深渊 3–4 章</td>
+</tr>
+<tr class="even">
+<td>第 1 月</td>
+<td>Lv60，2 件暗金</td>
+<td>T5–T6</td>
+<td>深渊 8+ 章</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-货币">9.2 货币</h3>
+<table>
+<thead>
+<tr class="header">
+<th>货币</th>
+<th>来源</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>金币</td>
+<td>卖装备、NPC 委托、分解</td>
+<td>鉴定、寄售、商铺、图纸</td>
+</tr>
+<tr class="even">
+<td>锻造石</td>
+<td>分解装备</td>
+<td>锻造、图纸合成、铁砧升级</td>
+</tr>
+<tr class="odd">
+<td>深渊结晶</td>
+<td>深渊层结算</td>
+<td>附魔（永久特性）</td>
+</tr>
+<tr class="even">
+<td>残片</td>
+<td>深渊精英/Boss、跳层奖励</td>
+<td>洗练词缀数值</td>
+</tr>
+<tr class="odd">
+<td>回响印记</td>
+<td>通关深渊章</td>
+<td>兑换暗金图纸、套装图纸</td>
+</tr>
+<tr class="even">
+<td>声望</td>
+<td>委托、深渊章首通</td>
+<td>解锁图纸槽、寄售位、学徒</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-通胀控制">9.3 通胀控制</h3>
+<ul>
+<li>金币产出随装备品质提高而提高，但<strong>高等级鉴定费/寄售价呈超线性增长</strong></li>
+<li>锻造石只来自分解 → 高品质装备越稀有，锻造石越缺 → 天然抑制囤积</li>
+<li>残片只来自深渊 → 离线玩家无法刷，强化在线时长</li>
+</ul>
+<hr />
+<h2 id="10-界面清单-uiux">10. 界面清单 (UI/UX)</h2>
+<table>
+<thead>
+<tr class="header">
+<th>界面</th>
+<th>关键要素</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>主界面</td>
+<td>角色剪影（7 部位装备实时渲染）、金币/残片/结晶、入口按钮</td>
+</tr>
+<tr class="even">
+<td>背包</td>
+<td>分页（装备/材料/消耗品）、虚拟列表、品质色边、锁定标记、洗练按钮</td>
+</tr>
+<tr class="odd">
+<td>装备详情</td>
+<td>词缀列表、与当前装备的<strong>数值差分对比</strong>（绿↑红↓）、传说特性描述</td>
+</tr>
+<tr class="even">
+<td>换装</td>
+<td>7 部位槽位环，点击展开该部位可用装备列表</td>
+</tr>
+<tr class="odd">
+<td>技能栏</td>
+<td>6 格，显示来源部位图标，升级标记</td>
+</tr>
+<tr class="even">
+<td>铁匠铺</td>
+<td>分解/锻造/附魔/洗练/鉴定/订单 六个 Tab</td>
+</tr>
+<tr class="odd">
+<td>深渊地图</td>
+<td>分支路径图、当前层、诅咒词缀常驻条、层间操作面板</td>
+</tr>
+<tr class="even">
+<td>战斗 HUD</td>
+<td>血条、怒气/资源、6 格技能、诅咒图标、Boss 血条</td>
+</tr>
+<tr class="odd">
+<td>图鉴</td>
+<td>42 基础图标 + 7 暗金，按部位/品质筛选，已获得显示词缀</td>
+</tr>
+</tbody>
+</table>
+<p><strong>UI 铁律</strong>：所有数值变化必须显示差分（当前 →
+新装），这是刷宝游戏的核心信息需求。</p>
+<hr />
+<h2 id="11-美术规范暗黑卡通">11. 美术规范（暗黑卡通）</h2>
+<h3 id="111-风格关键词">11.1 风格关键词</h3>
+<p>粗描边 · 夸张剪影 · 高饱和暗色 · 硬光影 · 手绘感笔触 ·
+轻微"卡通恐怖"</p>
+<h3 id="112-色彩规范">11.2 色彩规范</h3>
+<table>
+<thead>
+<tr class="header">
+<th>用途</th>
+<th>色值建议</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>场景基底</td>
+<td>深紫灰 <code>#2A2438</code> / 焦褐 <code>#3A2E28</code> / 冷青
+<code>#24333A</code></td>
+</tr>
+<tr class="even">
+<td>角色剪影</td>
+<td>近黑 <code>#1A1622</code> + 轮廓光</td>
+</tr>
+<tr class="odd">
+<td>品质色</td>
+<td>白 <code>#E8E8EA</code> / 绿 <code>#4CAF50</code> / 蓝
+<code>#3B82F6</code> / 紫 <code>#8B5CF6</code> / 橙 <code>#F59E0B</code>
+/ 红 <code>#EF4444</code></td>
+</tr>
+<tr class="even">
+<td>特效</td>
+<td>元素色高饱和 + 白色核心高光</td>
+</tr>
+</tbody>
+</table>
+<h3 id="113-资产清单首版">11.3 资产清单（首版）</h3>
+<table>
+<thead>
+<tr class="header">
+<th>类别</th>
+<th>数量</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>角色</td>
+<td>1 主角 + 8 敌人</td>
+<td>主角 6 向待机 + 8 向跑动 + 3 技能</td>
+</tr>
+<tr class="even">
+<td>装备图标</td>
+<td>7 部位 × 6 品质 = 42</td>
+<td>靠换色 + 角标复用</td>
+</tr>
+<tr class="odd">
+<td>暗金图标</td>
+<td>7</td>
+<td>单独绘制</td>
+</tr>
+<tr class="even">
+<td>场景</td>
+<td>12 章各 1 背景（可复用拼贴）</td>
+<td>2.5D 图层</td>
+</tr>
+<tr class="odd">
+<td>UI</td>
+<td>约 60 个控件 + 9 个面板</td>
+<td>可用九宫格 + 色块起步</td>
+</tr>
+<tr class="even">
+<td>特效</td>
+<td>14 个（7 部位主动技 + 7 状态）</td>
+<td>粒子优先</td>
+</tr>
+</tbody>
+</table>
+<h3 id="114-降本策略">11.4 降本策略</h3>
+<ul>
+<li>场景用 <strong>2.5D 图层拼贴</strong>（地面 + 遮挡层 +
+角色层），避免完整 3D 或大地图</li>
+<li>品质差异 <strong>不做独立贴图</strong>，用图标本体 + 发光边框 +
+名称颜色三重编码</li>
+<li>所有图标统一 64×64 网格、统一光源方向（左上）、统一描边粗细</li>
+</ul>
+<hr />
+<h2 id="12-音频规范">12. 音频规范</h2>
+<ul>
+<li><strong>战斗核心</strong>：重击音（低频）+ 元素特效音（高频）+
+受击闷响，三层混音</li>
+<li><strong>掉落音分级</strong>：品质决定音高（白→红音高递增），红色传说掉落有独立
+2 秒演出音（<strong>核心爽点</strong>）</li>
+<li><strong>音乐</strong>：探索/战斗/安全区 三状态切换，战斗曲 8
+小节循环带鼓点层</li>
+<li>铁匠铺：金属打击 + 风声 + 安静环境音，形成"平静 vs 危险"对比</li>
+</ul>
+<hr />
+<h2 id="13-技术架构cocos-creator-38-lts">13. 技术架构（Cocos Creator 3.8
+LTS）</h2>
+<h3 id="131-目录结构">13.1 目录结构</h3>
+<pre><code>assets/
+  scenes/            # Boot / Login / Main / Battle
+  scripts/
+    core/            # Game, EventBus, DataManager, SaveManager, Timer
+    data/            # 配置表读取与索引构建
+    domain/          # 纯逻辑：Equipment, Affix, Loot, Build, Curse, Combat
+    systems/         # 背包、装备、锻造、深渊、任务、商店
+    ui/              # 面板与组件
+    fx/              # 特效、伤害数字、屏幕震动
+  resources/
+    config/          # JSON 配置表（可热更）
+    prefab/
+    art/
+  bundle/
+    main/            # 主包
+    dl_equip/        # 装备图标、词缀图标（分包）
+    dl_fx/           # 特效（分包）</code></pre>
+<h3 id="132-核心模块职责">13.2 核心模块职责</h3>
+<table>
+<thead>
+<tr class="header">
+<th>模块</th>
+<th>职责</th>
+<th>关键约束</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Equipment</code></td>
+<td>装备实例、品质解析、词缀 roll、评分</td>
+<td><strong>纯函数，无节点依赖</strong>，可单测</td>
+</tr>
+<tr class="even">
+<td><code>Loot</code></td>
+<td>掉落表查询、权重抽取、保底</td>
+<td>纯函数 + 随机种子注入（便于回放与调试）</td>
+</tr>
+<tr class="odd">
+<td><code>Build</code></td>
+<td>7 部位属性聚合、技能栏装配、套装激活</td>
+<td>纯函数，输入角色 + 背包，输出战斗快照</td>
+</tr>
+<tr class="even">
+<td><code>Curse</code></td>
+<td>诅咒词缀的加载、叠加、结算修正</td>
+<td>通过<strong>修正器链 (Modifier Chain)</strong> 作用于战斗数值</td>
+</tr>
+<tr class="odd">
+<td><code>Combat</code></td>
+<td>实体、状态机、技能结算、伤害管线</td>
+<td>逻辑与表现分离，伤害管线支持 Modifier 插桩</td>
+</tr>
+<tr class="even">
+<td><code>Save</code></td>
+<td>存档读写、版本迁移</td>
+<td>见 13.4</td>
+</tr>
+<tr class="odd">
+<td><code>DeepAbyss</code></td>
+<td>节点图生成、层推进、状态机</td>
+<td>纯逻辑 + 表现分离</td>
+</tr>
+</tbody>
+</table>
+<h3 id="133-修正器链modifier-chain架构">13.3 修正器链（Modifier
+Chain）架构</h3>
+<p>诅咒词缀、套装效果、Buff/Debuff
+<strong>全部走同一条修正链</strong>，避免系统爆炸：</p>
+<pre><code>基础属性 → [装备词缀] → [套装效果] → [诅咒修正] → [增益/减益] → [临时Buff] → 最终属性</code></pre>
+<p>新增一个机制 = 往链上插一个
+Modifier，<strong>不需要改动战斗结算代码</strong>。这是支撑「40+ 诅咒 +
+24 套装效果 + N 个状态」能共存的关键。</p>
+<h3 id="134-配置表结构">13.4 配置表结构</h3>
+<p>四张核心表（JSON，热更）：</p>
+<p><strong>部位基底表 <code>equip_base.json</code></strong></p>
+<pre class="json"><code>{
+  &quot;id&quot;: 1001,
+  &quot;slot&quot;: &quot;weapon&quot;,
+  &quot;quality&quot;: 3,
+  &quot;name&quot;: &quot;猎颅&quot;,
+  &quot;affixWeights&quot;: { &quot;attack&quot;: 10, &quot;critRate&quot;: 6, &quot;critDamage&quot;: 5, &quot;skillLevel&quot;: 4 },
+  &quot;powerBase&quot;: 18
+}</code></pre>
+<p><strong>品质表 <code>quality.json</code></strong></p>
+<pre class="json"><code>{
+  &quot;id&quot;: 4,
+  &quot;name&quot;: &quot;史诗&quot;,
+  &quot;color&quot;: &quot;#8B5CF6&quot;,
+  &quot;prefixes&quot;: [&quot;深渊的&quot;, &quot;血誓的&quot;, &quot;幽冥的&quot;, &quot;灾厄的&quot;],
+  &quot;affixCount&quot;: 4,
+  &quot;traitChance&quot;: 0,
+  &quot;powerBase&quot;: 35,
+  &quot;decompose&quot;: { &quot;stone&quot;: 12, &quot;shard&quot;: 1 }
+}</code></pre>
+<p><strong>词缀表 <code>affix.json</code></strong></p>
+<pre class="json"><code>{
+  &quot;id&quot;: 2101,
+  &quot;name&quot;: &quot;猎杀本能&quot;,
+  &quot;type&quot;: &quot;prefix&quot;,
+  &quot;slots&quot;: [&quot;weapon&quot;, &quot;boots&quot;],
+  &quot;min&quot;: 8, &quot;max&quot;: 14, &quot;unit&quot;: &quot;%&quot;,
+  &quot;tags&quot;: [&quot;lean&quot;]
+}</code></pre>
+<p><strong>诅咒表 <code>curse.json</code></strong></p>
+<pre class="json"><code>{
+  &quot;id&quot;: 3007,
+  &quot;name&quot;: &quot;铁壁&quot;,
+  &quot;tier&quot;: 1,
+  &quot;scope&quot;: &quot;layer&quot;,
+  &quot;effects&quot;: [
+    { &quot;target&quot;: &quot;player.blockChance&quot;, &quot;op&quot;: &quot;add&quot;, &quot;value&quot;: -100 },
+    { &quot;target&quot;: &quot;enemy.drop.gold&quot;, &quot;op&quot;: &quot;mul&quot;, &quot;value&quot;: 1.5 }
+  ]
+}</code></pre>
+<p><strong>掉落表 <code>drop.json</code></strong>（挂在怪物上）</p>
+<pre class="json"><code>{
+  &quot;id&quot;: &quot;elite_wolf_01&quot;,
+  &quot;equipChance&quot;: 0.55,
+  &quot;minQuality&quot;: 3,
+  &quot;qualityWeights&quot;: { &quot;3&quot;: 60, &quot;4&quot;: 30, &quot;5&quot;: 8, &quot;6&quot;: 2 },
+  &quot;slotWeights&quot;: { &quot;weapon&quot;: 20, &quot;shield&quot;: 12, &quot;helmet&quot;: 14, &quot;chest&quot;: 16, &quot;pants&quot;: 14, &quot;boots&quot;: 12, &quot;belt&quot;: 12 }
+}</code></pre>
+<h3 id="135-存档格式">13.5 存档格式</h3>
+<p><strong>只存 roll
+结果，不存词缀逻辑</strong>，配置更新后老存档仍可正确还原。</p>
+<pre class="json"><code>{
+  &quot;version&quot;: 3,
+  &quot;player&quot;: { &quot;level&quot;: 35, &quot;exp&quot;: 84210, &quot;gold&quot;: 152300, &quot;forgeStone&quot;: 890, &quot;crystal&quot;: 44, &quot;shard&quot;: 12, &quot;echoMark&quot;: 3, &quot;renown&quot;: 7 },
+  &quot;equipped&quot;: { &quot;weapon&quot;: &quot;inst_10231&quot;, &quot;shield&quot;: &quot;inst_10232&quot;, &quot;helmet&quot;: null, &quot;chest&quot;: null, &quot;pants&quot;: null, &quot;boots&quot;: null, &quot;belt&quot;: null },
+  &quot;inventory&quot;: [
+    {
+      &quot;uid&quot;: &quot;inst_10231&quot;,
+      &quot;baseId&quot;: 1001,
+      &quot;quality&quot;: 4,
+      &quot;affixes&quot;: [ { &quot;id&quot;: 2101, &quot;value&quot;: 12 }, { &quot;id&quot;: 2140, &quot;value&quot;: 31 } ],
+      &quot;traits&quot;: [ { &quot;id&quot;: 9001, &quot;level&quot;: 2 } ],
+      &quot;locked&quot;: true
+    }
+  ],
+  &quot;unidentified&quot;: [ { &quot;uid&quot;: &quot;inst_10500&quot;, &quot;baseId&quot;: 1007, &quot;quality&quot;: 5 } ],
+  &quot;abyss&quot;: { &quot;cycle&quot;: 4, &quot;layer&quot;: 7, &quot;nodePath&quot;: [1, 2, 0], &quot;seed&quot;: 20241017 }
+}</code></pre>
+<p><strong>存档版本迁移</strong>：<code>SaveManager</code> 按
+<code>version</code> 逐级迁移，配置表 id 重排时用 <code>baseId</code>
+的稳定 id 而非数组下标。</p>
+<h3 id="136-性能与包体">13.6 性能与包体</h3>
+<ul>
+<li><strong>对象池</strong>：怪物、特效、伤害数字全部池化，战斗峰值 60
+单位不掉帧</li>
+<li><strong>虚拟列表</strong>：背包 200+ 件装备用 ScrollView +
+手动复用节点</li>
+<li><strong>分包</strong>：装备图标 / 特效独立 bundle，按需下载</li>
+<li><strong>纹理压缩</strong>：iOS 用 ETC2，Android 按渠道分级</li>
+<li><strong>同图集</strong>：按部位 + 品质打图集，降低 DrawCall</li>
+</ul>
+<h3 id="137-联网版本可选第二阶段">13.7 联网版本（可选，第二阶段）</h3>
+<ul>
+<li>客户端只与<strong>排行榜 / 寄售 /
+好友</strong>通信，战斗与掉落<strong>全部本地计算</strong></li>
+<li>掉落随机种子 +
+战斗日志上报，服务端只做<strong>结果校验与反作弊</strong>，不做战斗演算</li>
+<li>寄售走服务端托管物品，装备进交易行前先做<strong>属性校验与唯一 ID
+注册</strong></li>
+</ul>
+<hr />
+<h2 id="14-版本规划与产能">14. 版本规划与产能</h2>
+<h3 id="v01-验证原型目标验证装备即技能成立">V0.1
+验证原型（目标：验证「装备即技能」成立）</h3>
+<table>
+<thead>
+<tr class="header">
+<th>内容</th>
+<th>范围</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>场景</td>
+<td>1 个等距战斗场景 + 1 个主界面</td>
+</tr>
+<tr class="even">
+<td>角色</td>
+<td>1 个主角 + 3 种敌人</td>
+</tr>
+<tr class="odd">
+<td>装备</td>
+<td>7 部位 × 3 品质（T1/T2/T3）= 21 个基底图标</td>
+</tr>
+<tr class="even">
+<td>机制</td>
+<td>装备携带 1 主动 + 1 被动，6 格技能栏竞争填充，套装 2 件效果</td>
+</tr>
+<tr class="odd">
+<td>装备来源</td>
+<td>简化：只有掉落 + 背包 + 换装 + 分解</td>
+</tr>
+<tr class="even">
+<td>深渊</td>
+<td>3 层线性节点 + 每层 3 选 1 诅咒（共 6 条）</td>
+</tr>
+<tr class="odd">
+<td><strong>验证指标</strong></td>
+<td>玩家换装频次、7 部位选择分布是否均衡、技能栏是否出现"无解"配置</td>
+</tr>
+</tbody>
+</table>
+<p><strong>这是整个项目的生死线</strong>：如果 7
+个部位的技能在实机上不好玩、或者出现某个部位"必选"导致其余 6
+个形同虚设，A 方案的核心假设就崩了。此时 B/D/C
+三个方案都只是它的降级版，需要立刻转向。</p>
+<h3 id="v02-mvp目标可上线验证留存">V0.2 MVP（目标：可上线验证留存）</h3>
+<table>
+<thead>
+<tr class="header">
+<th>内容</th>
+<th>范围</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>主线</td>
+<td>3 章 × 8 关 + 3 个章节 Boss</td>
+</tr>
+<tr class="even">
+<td>深渊</td>
+<td>4 个 Cycle，每 Cycle 10 层，7 类节点，25 条诅咒</td>
+</tr>
+<tr class="odd">
+<td>装备</td>
+<td>7 部位 × 6 品质 = 42 图标，60+ 词缀，7 件暗金，8 套装</td>
+</tr>
+<tr class="even">
+<td>系统</td>
+<td>铁匠铺全功能（分解/锻造/附魔/洗练/鉴定/订单）、图鉴、任务追踪</td>
+</tr>
+<tr class="odd">
+<td>美术</td>
+<td>12 个场景拼贴、60 个 UI 面板</td>
+</tr>
+<tr class="even">
+<td>联网</td>
+<td>排行榜（可选）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="v10-正式版">V1.0 正式版</h3>
+<p>12
+章主线、无限深渊、赛季、暗金全收集、寄售行、公会、赛季限定套装。</p>
+<hr />
+<h2 id="15-商业化设计">15. 商业化设计</h2>
+<table>
+<thead>
+<tr class="header">
+<th>类型</th>
+<th>内容</th>
+<th>原则</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>免费</td>
+<td>全部主线、无限深渊、全部装备获取途径</td>
+<td><strong>不做 Pay to Win</strong>，随机性即内容</td>
+</tr>
+<tr class="even">
+<td>付费 · 外观</td>
+<td>角色皮肤、武器外观、宠物、界面主题、铁匠铺装饰</td>
+<td>主收入来源</td>
+</tr>
+<tr class="odd">
+<td>付费 · 便利</td>
+<td>额外背包格、离线收益加速、自动分解队列、寄售位</td>
+<td>不影响产出速率</td>
+</tr>
+<tr class="even">
+<td>付费 · 赛季</td>
+<td>赛季通行证（30 级）、赛季限定外观、赛季词缀</td>
+<td>赛季重置深渊进度，保留账号</td>
+</tr>
+</tbody>
+</table>
+<p><strong>红线</strong>：不卖装备、不卖深渊层数、不卖词缀数值。玩家付费可以变好看、变方便，不能变强。</p>
+<hr />
+<h2 id="16-风险与待验证假设">16. 风险与待验证假设</h2>
+<table>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>风险 / 假设</th>
+<th>影响</th>
+<th>应对</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><strong>7 部位技能在实机上是否好玩</strong>（核心假设）</td>
+<td>致命</td>
+<td>V0.1 原型优先验证，1 个部位做废就重做设计而非打补丁</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>7 部位 × 6 品质 = 42 图标的产能</td>
+<td>高</td>
+<td>严格用换色 + 角标复用，禁止逐件手绘</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>组合爆炸（词缀 × 品质 × 部位 × 套装 × 诅咒）</td>
+<td>高</td>
+<td>部位不重复规则 + 全局词缀上限 3 次 + 修正器链架构</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>数值通胀（掉落越刷越强 → 早期内容废弃）</td>
+<td>高</td>
+<td>深渊层数收益递减曲线；主线章节提供「保底 + 定向」而非纯随机</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>2D 等距 + 20 只怪同屏的移动端性能</td>
+<td>中</td>
+<td>对象池 + 图集合并 + 分辨率自适应；V0.1 就跑真机压测</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>铁匠铺变成纯粹的重复劳动</td>
+<td>中</td>
+<td>订单 + 学徒放置 + 装饰，把经营做成有节奏的日常而非苦力</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>掉落全靠随机，前期玩家容易卡死</td>
+<td>中</td>
+<td>首个紫装保底（首领必掉）、未鉴定装备提供沉没成本与博弈点</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>单机 vs 联网的投入产出比</td>
+<td>中</td>
+<td>战斗与掉落全本地，联网只做排行榜与交易，先跑单机版</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="17-下一步行动">17. 下一步行动</h2>
+<ol type="1">
+<li><strong>搭建 Cocos
+工程骨架</strong>：<code>core / data / domain / systems / ui</code>
+分层，配置表热更管线，存档系统</li>
+<li><strong>实现 <code>Equipment</code> / <code>Loot</code> /
+<code>Build</code> 三个纯逻辑模块 +
+单元测试</strong>（可用性最高，因为这三块决定了整个数据模型）</li>
+<li><strong>做 V0.1 原型</strong>：1 场景 + 21 装备 + 6 诅咒 + 7
+部位技能，跑通「换装改变打法」</li>
+<li><strong>真机压测 + 玩法验证</strong>，用 17 章的指标 1 判断是否继续
+A 方案</li>
+<li>验证通过后进入 V0.2 产能排期</li>
+</ol>
+<hr />
+<p><em>文档维护：玩法规则变更时，先改本文档的对应章节，再改配置表，最后改代码。配置表是唯一事实源，代码不得硬编码任何数值。</em></p>
+
+</div>
+</body>
+</html>
